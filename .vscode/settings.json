@@ -4,11 +4,21 @@
             "previewLimit": 50,
             "server": "localhost",
             "port": 5432,
-            "askForPassword": true,
             "driver": "PostgreSQL",
             "name": "postgres",
-            "database": "CityLibraryDB",
-            "username": "postgres"
+            "database": "postgres",
+            "username": "postgres",
+            "password": "$C17ebfc8766"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "CityLibraryDB",
+            "database": "citylibrarydb",
+            "username": "postgres",
+            "password": "$C17ebfc8766"
         }
     ]
 }

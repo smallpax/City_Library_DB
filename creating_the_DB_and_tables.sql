@@ -1,3 +1,6 @@
+-- DataBase Creation
+CREATE DATABASE CityLibraryDB;
+
 -- 1. Book
 CREATE TABLE Book (
   BookID           SERIAL     PRIMARY KEY,
@@ -35,6 +38,7 @@ CREATE TABLE Member (
   FirstName         VARCHAR(100) NOT NULL,
   LastName          VARCHAR(100) NOT NULL,
   Email             VARCHAR(255) UNIQUE NOT NULL,
+  phoneNumber       VARCHAR(20),
   Address           TEXT,
   MembershipDate    DATE        NOT NULL,
   Status            VARCHAR(20) NOT NULL
