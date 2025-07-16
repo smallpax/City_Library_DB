@@ -1,15 +1,3 @@
-## prompt ##
-now that we finished the ERD lets go over the table we need to create for the database and make sure they are normalized
-
-## answer ## 
-
-Below is a proposed set of relational tables (with primary keys, foreign keys, and attribute lists) corresponding to our ERD.  After the schema definitions, you’ll find a brief normalization check showing that each table meets 1NF, 2NF, and 3NF.
-
----
-
-## A. Schema Definitions
-
-```sql
 -- 1. Book
 CREATE TABLE Book (
   BookID           SERIAL     PRIMARY KEY,
@@ -24,16 +12,9 @@ CREATE TABLE Book (
 CREATE TABLE Author (
   AuthorID   SERIAL   PRIMARY KEY,
   FirstName  VARCHAR(100) NOT NULL,
-  LastName   VARCHAR(100) NOT NULL,
-  Bio        TEXT,
-  -- PhoneNumber is multivalue: see AuthorPhone table
+  LastName   VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE AuthorPhone (
-  AuthorID     INTEGER      NOT NULL REFERENCES Author(AuthorID),
-  PhoneNumber  VARCHAR(20)  NOT NULL,
-  PRIMARY KEY (AuthorID, PhoneNumber)
-);
 
 -- 3. Genre
 CREATE TABLE Genre (
@@ -45,8 +26,7 @@ CREATE TABLE Genre (
 CREATE TABLE Publisher (
   PublisherID  SERIAL   PRIMARY KEY,
   Name         VARCHAR(255) NOT NULL,
-  Address      TEXT,
-  ContactInfo  TEXT
+  Address      TEXT
 );
 
 -- 5. Member
@@ -58,14 +38,7 @@ CREATE TABLE Member (
   Address           TEXT,
   MembershipDate    DATE        NOT NULL,
   Status            VARCHAR(20) NOT NULL
-  -- PhoneNumber multivalue: see MemberPhone
   -- MembershipDuration derived
-);
-
-CREATE TABLE MemberPhone (
-  MemberID     INTEGER      NOT NULL REFERENCES Member(MemberID),
-  PhoneNumber  VARCHAR(20)  NOT NULL,
-  PRIMARY KEY (MemberID, PhoneNumber)
 );
 
 -- 6. Librarian
@@ -138,29 +111,3 @@ FROM Book b
 LEFT JOIN BookCopy bc ON bc.BookID = b.BookID
 LEFT JOIN Loan l ON l.CopyID = bc.CopyID
 GROUP BY b.BookID, b.TotalCopies;
-```
-
----
-
-## B. Normalization Check
-
-All tables are designed to satisfy **1NF**, **2NF**, and **3NF**:
-
-1. **First Normal Form (1NF)**
-
-   * All attributes are atomic (no repeating groups).
-   * Multivalue attributes (phone numbers) are moved into separate tables (`AuthorPhone`, `MemberPhone`).
-
-2. **Second Normal Form (2NF)**
-
-   * For tables with a **single-column primary key** (Book, Author, Genre, Publisher, Member, Librarian, BookCopy, Loan, Reservation, Fine), no partial-key issues arise.
-   * For **composite-key** tables (`BookAuthor`, `BookGenre`, `AuthorPhone`, `MemberPhone`), every non-key attribute (none, in these pure join tables) inherently depends on the full key.
-
-3. **Third Normal Form (3NF)**
-
-   * No transitive dependencies: every non-key attribute depends **only** on the primary key.
-
-     * e.g., in `Member`, `MembershipDuration` is derived, not stored.
-     * ContactInfo fields in `Publisher` depend only on `PublisherID`.
-
-Every table’s non-key columns describe **only** the entity identified by that table’s primary key, with no attributes depending on other non-key columns. This ensures a fully normalized (3NF) design.
