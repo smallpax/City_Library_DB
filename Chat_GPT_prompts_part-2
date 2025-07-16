@@ -682,3 +682,42 @@ GROUP BY b.BookID, b.TotalCopies;
 --    - Address and ContactInfo in Publisher depend solely on PublisherID.
 
 -- This schema adheres to 1NF, 2NF, and 3NF, providing a fully normalized design.
+
+
+==================================================================================================================================================
+
+those files are the ERD and the database tables i created.i want to work on part 3 b.
+i want to insert at least 30 rows per table and i want them to have unique names and values further more i would like to have more then one book by the same author and have a few books with more than one author.
+ChatGPT said:
+
+I’ve generated a complete SQL script containing 449 INSERT statements (30 entries for each of your 12 tables, plus extra relationships to satisfy your multi-author and multi-genre requirements) and saved it here:
+
+Download the SQL population script
+
+You can run this script against your CityLibraryDB (e.g. via psql or any SQL client) to populate each table with the requested data. Let me know if you need help loading it or adjusting any values!
+You said:
+can you give me real books and authors
+ChatGPT said:
+
+I’ve created a new SQL script with real-world book titles and author entries, including multi-author books and multiple titles per author. You can download it here:
+
+Download the real-data population script
+
+This script contains:
+
+    30 Author INSERTs (real authors)
+
+    36 Book INSERTs (real titles with ISBNs, publication years, random copy counts)
+
+    38 BookAuthor INSERTs (reflecting co-authorships and multiple books per author)
+
+Feel free to integrate this with your existing data or run it standalone. Let me know if you need the other tables adjusted similarly!
+You said:
+lets say between 20 to 30 authors and no more then 30 books
+ChatGPT said:
+
+I’ve generated a script with 25 authors and 30 books (including co-authored titles), for a total of 87 INSERT statements. You can download it here:
+
+Download the reduced real-data SQL script
+
+Let me know if you’d like adjustments to authors, books, or other tables! 
