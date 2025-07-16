@@ -1,7 +1,6 @@
 [x] set up a text file and save the chat conversations there
-[] create a list of functions i want the database to do
-[] list the tables (use chat for suggestions)
-[] create the ERD 
-[] make sure all the tables are normalized
+[x] create a list of functions i want the database to do
+[x] list the tables (use chat for suggestions)
+[x] create the ERD 
+[x] make sure all the tables are normalized
 [] create the tables 
-[]

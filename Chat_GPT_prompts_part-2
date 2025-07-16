@@ -227,78 +227,141 @@ This schema and function set gives you a solid, scalable foundation for building
 ## prompt ##
 
 now after we have the key attributes and tables lets start working on the ERD .
-define all the key entities that will go into the ERD and the  relationshps between them
-also define all the attributes , key attributes , derived attributes , and multivalue attributes 
+define all the key entities that will go into the ERD and the  relationships between them
+also define all the attributes , key attributes , derived attributes , and multivalue attributes .
+make sure to note the types of entities and the types of relationships and give fitting names to said relationships
 
 ## answer ##
 
-Below is a conceptual ERD specification for your library database.  We first list each **entity** with its attributes—marking **key** (PK), **derived** (→), and **multivalue** ({} )—then the **relationships** between them with their cardinalities.
-
----
+# ERD Conceptual Schema
 
 ## 1. Entities & Attributes
 
-| Entity          | Attributes                                                                                                                                                                       |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Book**        | • **BookID** (PK)<br>• Title<br>• ISBN<br>• PublicationYear<br>• TotalCopies<br>• → AvailableCopies<br> {Subject}                                      |
-| **BookCopy**    | • **CopyID** (PK)<br>• Barcode<br>• Status (available/on-loan/lost)<br>• BookID(FK)                                                                    |
-| **Author**      | • **AuthorID** (PK)<br>• FirstName<br>• LastName<br>• Bio<br>• {PhoneNumber}                                                                           |
-| **Genre**       | • **GenreID** (PK)<br>• Name                                                                                                                           |
-| **Publisher**   | • **PublisherID** (PK)<br>• Name<br>• Address<br>• ContactInfo                                                                                         |
-| **Member**      | • **MemberID** (PK)<br>• FirstName<br>• LastName<br>• Email<br>• Address<br>• MembershipDate<br>• Status (active/suspended/expired)<br>• {PhoneNumber}<br>• → MembershipDuration                                                                                                                                                 |
-| **Librarian**   | • **LibrarianID** (PK)<br>• Username<br>• PasswordHash<br>• FirstName<br>• LastName<br>• Role (admin/staff)                                            |
-| **Loan**        | • **LoanID** (PK)<br>• MemberID (FK)<br>• CopyID (FK)<br>• LoanDate<br>• DueDate<br>• ReturnDate<br>• → OverdueDays                                    |
-| **Reservation** | • **ReservationID** (PK)<br>• MemberID (FK)<br>• BookID (FK)<br>• ReservationDate<br>• Status (pending/fulfilled/cancelled)                            |
-| **Fine**        | • **FineID** (PK)<br>• LoanID (FK)<br>• Amount<br>• PaidDate                                                                                           |
+### 1.1 Strong Entities
 
-* **Key attributes** (PK) uniquely identify each entity.
-* **Derived attributes** (→) are calculated from other data.
-* **Multivalue attributes** ({…}) can hold multiple values per entity instance.
+Entities that exist independently with their own primary keys:
 
----
+* **Book**
 
-## 2. Relationships & Cardinalities
+  * Attributes:
 
-1. **Book ⟷ Author**
+    * **BookID** (PK)
+    * Title (simple)
+    * ISBN (simple, unique)
+    * PublicationYear (simple)
+    * TotalCopies (simple)
+    * → AvailableCopies (derived: TotalCopies minus active loans)
+    * {Subject} (multivalue: multiple subjects or tags)
 
-   * *Written\_By* (M\:N)
-   * Resolving entity: **BookAuthor**(*BookID*, *AuthorID*)
+* **Author**
 
-2. **Book ⟷ Genre**
+  * Attributes:
 
-   * *Classified\_As* (M\:N)
-   * Resolving entity: **BookGenre**(*BookID*, *GenreID*)
+    * **AuthorID** (PK)
+    * FirstName (simple)
+    * LastName (simple)
+    * Bio (simple)
+    * {PhoneNumber} (multivalue)
 
-3. **Book → Publisher**
+* **Genre**
 
-   * *Published\_By* (M:1)
-   * Book.PublisherID → Publisher.PublisherID
+  * Attributes:
 
-4. **Member ⟷ BookCopy** via **Loan**
+    * **GenreID** (PK)
+    * Name (simple)
 
-   * *Borrows* (Member 1––*<Loan>*––M BookCopy)
-   * Loan carries LoanDate, DueDate, ReturnDate
+* **Publisher**
 
-5. **Member ⟷ Book** via **Reservation**
+  * Attributes:
 
-   * *Reserves* (1\:M from Member to Reservation; 1\:M from Book to Reservation)
+    * **PublisherID** (PK)
+    * Name (simple)
+    * Address (simple)
+    * ContactInfo (simple)
 
-6. **Loan → Fine**
+* **Member**
 
-   * *Inculdes* (1:0..1 or 1\:M if partial payments)
-   * Fine.LoanID → Loan.LoanID
+  * Attributes:
 
-7. **(Optional) Librarian → Loan/Reservation**
+    * **MemberID** (PK)
+    * FirstName (simple)
+    * LastName (simple)
+    * Email (simple, unique)
+    * Address (simple)
+    * MembershipDate (simple)
+    * Status (simple: active/suspended/expired)
+    * {PhoneNumber} (multivalue)
+    * → MembershipDuration (derived: current date minus MembershipDate)
 
-   * *Processes* (1\:M)
-   * e.g. LibrarianID recorded on each Loan or Reservation for audit
+* **Librarian**
 
----
+  * Attributes:
 
-### Diagramming Tips
+    * **LibrarianID** (PK)
+    * Username (simple, unique)
+    * PasswordHash (simple)
+    * FirstName (simple)
+    * LastName (simple)
+    * Role (simple: admin/staff)
 
-* **Entities** as rectangles, attributes inside (underline PKs; double-oval for multivalue; dashed oval for derived).
-* **Relationships** as diamonds, with lines annotated “1” or “N” (crow’s-foot).
-* For M\:N, show an intersection entity (e.g. BookAuthor) or annotate the diamond directly.
+### 1.2 Weak Entities
 
-With these definitions you can now draft your ERD in a tool like draw\.io or dbdiagram.io, placing entities, drawing relationships, and visually distinguishing key/derived/multivalue attributes.
+Dependent entities identified by their owning relationships (double‐border in ERD):
+
+* **BookCopy**
+
+  * Attributes:
+
+    * **CopyID** (PK)
+    * Barcode (partial key, unique)
+    * Status (simple: available/on-loan/lost)
+    * BookID (FK)
+
+* **Loan**
+
+  * Attributes:
+
+    * **LoanID** (PK)
+    * MemberID (FK)
+    * CopyID (FK)
+    * LoanDate (simple)
+    * DueDate (simple)
+    * ReturnDate (simple, nullable)
+    * → OverdueDays (derived: greatest of 0 or ReturnDate/current\_date minus DueDate)
+
+* **Reservation**
+
+  * Attributes:
+
+    * **ReservationID** (PK)
+    * MemberID (FK)
+    * BookID (FK)
+    * ReservationDate (simple)
+    * Status (simple: pending/fulfilled/cancelled)
+  * **Note:** Reservations are placed on the Book title rather than a specific BookCopy because patrons reserve the title; any available copy will satisfy the reservation when fulfilled.
+
+* **Fine**
+
+  * Attributes:
+
+    * **FineID** (PK)
+    * LoanID (FK)
+    * Amount (simple)
+    * PaidDate (simple, nullable)
+
+## 2. Relationships
+
+| Name                       | Entities                | Cardinality                     | Type | Relationship Type  |
+| -------------------------- | ----------------------- | ------------------------------- | ---- | ------------------ |
+| **Written\_By**            | Book — Author           | Book(0..*)–Author(1..*)         | M\:N | Non-identifying    |
+| **Classified\_As**         | Book — Genre            | Book(0..*)–Genre(1..*)          | M\:N | Non-identifying    |
+| **Published\_By**          | Book — Publisher        | Book(0..\*)–Publisher(1)        | M:1  | Non-identifying    |
+| **Owns**                   | Book — BookCopy         | Book(1)–BookCopy(1..\*)         | 1\:M | Identifying (weak) |
+| **Borrows**                | Member — Loan           | Member(1)–Loan(0..\*)           | 1\:M | Identifying (weak) |
+| **Loan\_For**              | Loan — BookCopy         | Loan(1)–BookCopy(1)             | 1:1  | Identifying (weak) |
+| **Reserves**               | Member — Reservation    | Member(1)–Reservation(0..\*)    | 1\:M | Identifying (weak) |
+| **Reservation\_For**       | Reservation — Book      | Reservation(1)–Book(1)          | M:1  | Identifying (weak) |
+| **Incurred\_By**           | Loan — Fine             | Loan(1)–Fine(0..\*)             | 1\:M | Identifying (weak) |
+| **Processes\_Loan**        | Librarian — Loan        | Librarian(1)–Loan(0..\*)        | 1\:M | Non-identifying    |
+| **Processes\_Reservation** | Librarian — Reservation | Librarian(1)–Reservation(0..\*) | 1\:M | Non-identifying    |
+
